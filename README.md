@@ -1,48 +1,131 @@
 # DNS Response Validation & Diagnostic System
 
-A clean project layout with one backend and one frontend folder.
+A web-based application for performing DNS queries, validating DNS responses, identifying DNS errors, and viewing diagnostic information.
 
-## Folder structure
+## Live Project
+
+Frontend Application (Vercel):https://dns-project.vercel.app/
+Backend API (Render): https://dns-project-68xp.onrender.com/
+Backend Health Check: https://dns-project-68xp.onrender.com/api/health
+
+## Project Overview
+
+The DNS Response Validation & Diagnostic System helps users perform DNS lookups and understand the responses returned by the DNS resolver.
+
+Users can enter a domain name, select a DNS record type, and view the corresponding DNS response and diagnostic information.
+
+## Folder Structure
 
 ```text
 DNS-Response-Validation-Clean/
 ├── backend/
-│   ├── src/server.js
-│   ├── src/routes/
-│   ├── src/services/
-│   ├── src/models/
+│   ├── src/
+│   │   ├── server.js
+│   │   ├── routes/
+│   │   ├── services/
+│   │   └── models/
 │   ├── package.json
 │   └── .env.example
+│
 └── frontend/
     ├── src/
     ├── package.json
     └── .env.example
 ```
 
-## Run locally (Windows PowerShell)
+## Technologies Used
 
-Terminal 1 — backend:
+### Frontend
+- React.js
+- Vite
+- JavaScript
+- HTML
+- CSS
+- Axios
+
+### Backend
+- Node.js
+- Express.js
+- DNS Promises API
+
+### Database
+- MongoDB Atlas
+
+### Deployment and Version Control
+- Vercel – Frontend deployment
+- Render – Backend deployment
+- Git and GitHub – Version control
+
+## Key Features
+
+- DNS query execution
+- Support for multiple DNS record types
+- DNS response validation
+- Identification of NXDOMAIN and NODATA conditions
+- Diagnostic result display
+- DNS query history
+- Backend and database health monitoring
+
+## Supported DNS Record Types
+
+| Record | Description |
+|---|---|
+| A | IPv4 Address |
+| AAAA | IPv6 Address |
+| MX | Mail Exchange |
+| NS | Name Server |
+| TXT | Text Record |
+| CNAME | Canonical Name |
+
+## Run Locally (Windows PowerShell)
+
+### Backend Setup
+
+Open the first terminal:
 
 ```powershell
 cd backend
 npm install
 Copy-Item .env.example .env
-# Edit backend/.env and add your MongoDB Atlas URI and CLIENT_URL
+```
+
+Edit `backend/.env` and configure your MongoDB Atlas connection string.
+
+Start the backend:
+
+```powershell
 npm run dev
 ```
 
-Terminal 2 — frontend:
+### Frontend Setup
+
+Open a second terminal:
 
 ```powershell
 cd frontend
 npm install
 Copy-Item .env.example .env
+```
+
+Configure `frontend/.env`:
+
+```env
+VITE_API_URL=http://localhost:5000
+```
+
+Start the frontend:
+
+```powershell
 npm run dev
 ```
 
-Open the Vite URL printed in the frontend terminal (usually http://localhost:5173).
+Open the Vite URL printed in the terminal, usually:
 
-## Backend environment (`backend/.env`)
+http://localhost:5173
+
+## Backend Environment Configuration
+
+Configure `backend/.env`:
 
 ```env
 PORT=5000
@@ -50,66 +133,110 @@ CLIENT_URL=http://localhost:5173
 MONGODB_URI=mongodb+srv://USERNAME:PASSWORD@YOUR_CLUSTER_HOST/dnsDiagnosticDB?retryWrites=true&w=majority
 ```
 
-Replace the placeholders with your own Atlas database user, password, and cluster host. URL-encode special characters in the password. Never commit `.env` or share its contents.
+Replace the placeholders with your own MongoDB Atlas database username, password, and cluster host.
 
-## Frontend environment (`frontend/.env`)
+URL-encode special characters in the password.
+
+**Important:** Never commit `.env` files or expose database credentials.
+
+## Frontend Environment Configuration
+
+Configure `frontend/.env`:
 
 ```env
 VITE_API_URL=http://localhost:5000
 ```
 
-## Fresh Render deployment
+## Deployment
 
-Create a new Web Service connected to the GitHub repository containing this project. Set:
+### Frontend – Vercel
 
+- Platform: Vercel
+- Framework: Vite
+- Root Directory: `frontend`
+- Build Command: `npm run build`
+- Output Directory: `dist`
+
+Environment variable:
+
+```env
+VITE_API_URL=https://dns-project-68xp.onrender.com
+```
+
+Live Frontend:
+
+https://dns-project.vercel.app/
+
+### Backend – Render
+
+- Platform: Render
 - Root Directory: `backend`
 - Build Command: `npm install`
 - Start Command: `npm start`
 
-Add Render environment variables:
+Environment variables:
 
-- `MONGODB_URI`: your complete MongoDB Atlas URI
-- `CLIENT_URL`: your deployed Vercel frontend origin, with no trailing slash
-- `NODE_ENV`: `production`
+```env
+MONGODB_URI=your_mongodb_atlas_connection_string
+CLIENT_URL=https://dns-project.vercel.app
+NODE_ENV=production
+```
 
-Render provides `PORT` automatically. Do not add `VITE_API_URL` to Render.
+Live Backend:
 
-## Fresh Vercel deployment
+https://dns-project-68xp.onrender.com/
 
-Import the same repository and set:
+## API Endpoints
 
-- Root Directory: `frontend`
-- Framework Preset: Vite
-- Build Command: `npm run build`
-- Output Directory: `dist`
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/api/health` | Backend and database health check |
+| POST | `/api/dns/query` | Perform DNS lookup |
+| GET | `/api/history` | Retrieve query history |
 
-Add this Vercel environment variable:
+Example DNS query request:
 
-- `VITE_API_URL`: your Render backend base URL, for example `https://your-service.onrender.com` (no `/api` suffix)
+```json
+{
+  "domain": "example.com",
+  "recordType": "A"
+}
+```
 
-After deploying Vercel, copy its exact production URL into Render's `CLIENT_URL`, then redeploy the Render service if you changed that variable.
+## MongoDB Atlas Configuration
 
-## Health check
+1. Configure a MongoDB Atlas database user with read/write permissions.
+2. Add the MongoDB connection string to the backend environment variables.
+3. Configure the appropriate network access rules.
+4. Use the database name `dnsDiagnosticDB`.
+5. Keep database credentials private.
 
-Open `https://YOUR-RENDER-SERVICE.onrender.com/api/health`.
+## Health Check
 
-Expected fields include `status: "ok"`, `api: "online"`, and `database: "connected"` once Atlas has connected.
+Visit:
 
-## API endpoints
+https://dns-project-68xp.onrender.com/api/health
 
-- `GET /api/health`
-- `POST /api/dns/query` with JSON `{ "domain": "example.com", "recordType": "A" }`
-- `GET /api/history`
+The expected response includes:
 
-Supported DNS record types: A, AAAA, MX, NS, TXT, CNAME.
+- `status: "ok"`
+- `api: "online"`
+- `database: "connected"` when the database connection is successful.
 
-## MongoDB Atlas checklist
+## Important Technical Note
 
-1. Confirm the Atlas database user has read/write access.
-2. Confirm the password in `MONGODB_URI` is current and URL-encoded if needed.
-3. Add the appropriate Render network access rule in Atlas. A temporary `0.0.0.0/0` rule permits access from anywhere; use only with a strong password and tighten it when possible.
-4. Keep the database name `dnsDiagnosticDB`.
+This application uses the host machine's configured DNS resolver through Node.js `dns/promises`.
 
-## Important
+It is not a raw DNS packet analyzer and does not perform DNSSEC verification.
 
-This app uses the host machine's configured DNS resolver through Node's `dns/promises`. It is not a raw DNS packet analyzer and does not perform DNSSEC verification.
+## Author
+
+**SuchithraRaju**
+
+GitHub: https://github.com/SuchithraRaju
+
+## Project Links
+
+- Live Application: https://dns-project.vercel.app/
+- Backend API: https://dns-project-68xp.onrender.com/
+- GitHub Repository: https://github.com/SuchithraRaju/dns-project
